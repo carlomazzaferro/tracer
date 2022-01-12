@@ -10,3 +10,5 @@ Fill in the `.secrets.env` with your RPC URL, and then:
 ```shell
 >>> ENV=local make up
 ```
+
+Head to http://localhost:8080/docs to check out the live Swagger docs
