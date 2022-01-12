@@ -5,6 +5,8 @@ the [Worktest Solution Proposal](https://elegant-journey-920.notion.site/Worktes
 
 ### Locally running the services
 
+Fill in the `.secrets.env` with your RPC URL, and then:
+
 ```shell
 >>> ENV=local make up
 ```

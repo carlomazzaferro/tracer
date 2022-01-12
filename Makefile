@@ -9,6 +9,8 @@ AWS_DEFAULT_REGION = eu-central-1
 DOCKER_REGISTRY = quantco
 
 include .common.env
+include .secrets.env
+
 
 ifdef ENV
 include .${ENV}.env
@@ -64,6 +66,7 @@ clean: ##-local- Cleanup project
 
 
 up:  ##-local- Build image
+	echo "${RPC_URL}"
 	docker-compose -f docker-compose.local.build.yml up --build
 
 down:  ##-local- Build image

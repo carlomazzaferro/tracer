@@ -25,6 +25,7 @@ class Settings(BaseSettings):
     POSTGRES_PORT: Optional[str] = None
     SQLALCHEMY_DATABASE_URI: Optional[PostgresDsn] = None
     REDIS_URI: RedisDsn = "redis://redis:6379/0"
+    RPC_URL: AnyHttpUrl
 
     @validator("SQLALCHEMY_DATABASE_URI", pre=True)
     def assemble_db_connection(cls, v, values):
