@@ -62,10 +62,24 @@ clean: ##-local- Cleanup project
 # DOCKER
 # -------------------------------------------------------------------
 
-docker-build:  ##-local- Build image
+
+up:  ##-local- Build image
+	docker-compose -f docker-compose.local.build.yml up --build
+
+down:  ##-local- Build image
+	docker-compose -f docker-compose.local.build.yml down
+
+
+docker-build-tracer:  ##-local- Build image
 	cp -R services/training services/backend/app
 	docker build --build-arg ENV=prod -t ${DOCKER_REGISTRY}/${PROJ_NAME}:latest ./service
 	rm -rf services/backend/app/training
+
+docker-build-tracer:  ##-local- Build image
+	cp -R services/training services/backend/app
+	docker build --build-arg ENV=prod -t ${DOCKER_REGISTRY}/${PROJ_NAME}:latest ./service
+	rm -rf services/backend/app/training
+
 
 
 docker-push:  ##-local- Build & push image to ECR
