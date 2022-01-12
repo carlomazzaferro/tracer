@@ -1,0 +1,64 @@
+version: '3.3'
+services:
+  tracer:
+    entrypoint: [ "/start-reload.sh" ]
+    build:
+      context: ./service
+    environment:
+      - SERVER_HOST=http://${BACKEND_DOMAIN_NAME}
+      - SERVER_NAME=${BACKEND_DOMAIN_NAME}
+      - VIRTUAL_HOST=${BACKEND_DOMAIN_NAME}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - BACKEND_CORS_ORIGINS=["http://localhost", "http://localhost:4200", "https://localhost", "https://localhost:4200",  "https://localhost:8080", "http://api.dev.tracer.io"]
+      - PROJECT_NAME=tracer
+      - POSTGRES_SERVER=db
+      - POSTGRES_USER=tracer
+      - POSTGRES_DB=app
+
+    volumes:
+      - ./backend/app:/app
+
+    depends_on:
+      - db
+    networks:
+      default:
+        aliases:
+          - ${BACKEND_DOMAIN_NAME}
+
+  db:
+    ports:
+      - '5432:5432'
+    image: postgres:11
+    environment:
+      - PGDATA=/var/lib/postgresql/data/pgdata
+      - POSTGRES_SERVER=db
+      - POSTGRES_USER=tracer
+      - POSTGRES_DB=app
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    networks:
+      default:
+        aliases:
+          - ${BACKEND_DOMAIN_NAME}
+
+  celeryworker:
+    build:
+      context: ./service
+      dockerfile: Dockerfile.celery
+    environment:
+      - SERVER_HOST=http://${BACKEND_DOMAIN_NAME}
+      - SERVER_NAME=${BACKEND_DOMAIN_NAME}
+      - VIRTUAL_HOST=${BACKEND_DOMAIN_NAME}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - BACKEND_CORS_ORIGINS=["http://localhost", "http://localhost:4200", "https://localhost", "https://localhost:4200",  "https://localhost:8080", "http://api.dev.tracer.io"]
+      - PROJECT_NAME=tracer
+      - USERS_OPEN_REGISTRATION=False
+      - POSTGRES_SERVER=db
+      - POSTGRES_USER=tracer
+      - POSTGRES_DB=app
+
+  ingress:
+    image: jwilder/nginx-proxy
+    ports:
+      - "80:80"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro

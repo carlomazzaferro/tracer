@@ -1,0 +1,18 @@
+FROM python:3.9-slim as base
+
+RUN useradd -ms /bin/bash user --home /app
+
+WORKDIR /app
+ENV PYTHONPATH=/app
+
+COPY reqs/base.txt requirements.txt
+RUN pip install -r requirements.txt
+
+FROM base as run
+
+COPY ./app/worker-start.sh /worker-start.sh
+
+RUN chmod +x /worker-start.sh
+
+CMD ["bash", "/worker-start.sh"]
+
