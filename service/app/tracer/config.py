@@ -1,21 +1,10 @@
-import secrets
 from typing import List, Optional
 
-from pydantic import AnyHttpUrl, BaseSettings, PostgresDsn, validator
+from pydantic import AnyHttpUrl, BaseSettings, PostgresDsn, validator, RedisDsn
 
 
 class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
-    TAKTILE_API_URL: AnyHttpUrl
-    DEPLOYMENT_API_URL: AnyHttpUrl
-    ADVERTISED_HOST: AnyHttpUrl
-
-    SECRET_KEY: str = secrets.token_urlsafe(32)
-
-    AWS_ACCOUNT_ID = "207180782340"
-    AWS_ECR_REGION = "eu-west-3"
-    SERVER_NAME: str
-    SERVER_HOST: AnyHttpUrl
     # BACKEND_CORS_ORIGINS is a JSON-formatted list of origins
     # e.g: '["http://localhost", "http://localhost:4200", "http://localhost:3000", \
     # "http://localhost:8080", "http://local.dockertoolbox.tiangolo.com"]'
@@ -35,7 +24,7 @@ class Settings(BaseSettings):
     POSTGRES_DB: str
     POSTGRES_PORT: Optional[str] = None
     SQLALCHEMY_DATABASE_URI: Optional[PostgresDsn] = None
-    REDIS_URI: str = "memory://"
+    REDIS_URI: RedisDsn = "redis://redis:6379/0"
 
     @validator("SQLALCHEMY_DATABASE_URI", pre=True)
     def assemble_db_connection(cls, v, values):
@@ -58,3 +47,4 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+print(settings.dict())

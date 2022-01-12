@@ -3,8 +3,8 @@ from typing import List
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from schemas.block_trace import BlockTrace
 from tracer.api.utils.db import get_db
+from tracer.schemas.block_trace import BlockTrace
 
 router = APIRouter()
 

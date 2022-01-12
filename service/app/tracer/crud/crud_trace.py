@@ -2,9 +2,9 @@ from typing import List
 
 from sqlalchemy.orm import Session
 
-from schemas.block_trace import BlockTraceCreate, BlockTraceUpdate
 from tracer.crud.base import CRUDBase
 from tracer.models.block_trace import BlockTrace
+from tracer.schemas.block_trace import BlockTraceCreate, BlockTraceUpdate
 
 
 class CRUDBlockTrace(CRUDBase[BlockTrace, BlockTraceCreate, BlockTraceUpdate]):
