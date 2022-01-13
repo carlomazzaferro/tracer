@@ -15,6 +15,7 @@ services:
       - POSTGRES_DB=app
       - POSTGRES_PASSWORD=password
       - RPC_URL=${RPC_URL}
+      - REINITIALIZE_DB=True
     ports:
       - "8080:8080"
     env_file:
