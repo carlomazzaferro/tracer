@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from tracer.api.utils.db import get_db
-from tracer.celery_app import celery_app
+from tracer.worker import backfill_blocks
 
 router = APIRouter()
 
@@ -14,14 +14,17 @@ def backfill(
     """
     backfill block
     """
-    celery_app.send_task("app.worker.test_celery", args=[from_block, to_block])
+    task = backfill_blocks.delay(from_block=from_block, to_block=to_block)
+    return task.task_id
 
 
 @router.get("/{job_id}")
-def backfill_job_status(
-        job_id: int,
-        db: Session = Depends(get_db),
-):
+def backfill_job_status(job_id: str):
     """
     Retrieve job status
     """
+    result = backfill_blocks.AsyncResult(job_id)
+    return {
+        "status": result.status,
+        "completed": result.ready()
+    }
