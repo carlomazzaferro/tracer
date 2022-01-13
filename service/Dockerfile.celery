@@ -5,6 +5,8 @@ RUN useradd -ms /bin/bash user --home /app
 WORKDIR /app
 ENV PYTHONPATH=/app
 
+RUN apt-get update -qy && apt-get install -qy curl gcc
+
 COPY reqs/base.txt requirements.txt
 
 RUN pip install -U setuptools pip
