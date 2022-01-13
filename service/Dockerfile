@@ -6,6 +6,8 @@ RUN useradd -ms /bin/bash user --home /app
 WORKDIR /app
 ENV PYTHONPATH=/app
 
+RUN apt-get update -qy && apt-get install -qy curl gcc
+
 COPY reqs/base.txt requirements.txt
 RUN pip install -U setuptools pip
 RUN pip install -r requirements.txt
@@ -13,7 +15,7 @@ RUN pip install -r requirements.txt
 
 FROM base as unit-tests
 
-RUN apt-get update -qy && apt-get install -qy curl
+
 
 WORKDIR /src
 ENV PYTHONPATH=/src/app
