@@ -66,7 +66,6 @@ clean: ##-local- Cleanup project
 
 
 up:  ##-local- Build image
-	echo "${RPC_URL}"
 	docker-compose -f docker-compose.local.build.yml up --build
 
 down:  ##-local- Build image
@@ -74,9 +73,7 @@ down:  ##-local- Build image
 
 
 docker-build-tracer:  ##-local- Build image
-	cp -R services/training services/backend/app
-	docker build --build-arg ENV=prod -t ${DOCKER_REGISTRY}/${PROJ_NAME}:latest ./service
-	rm -rf services/backend/app/training
+	docker build -t ${DOCKER_REGISTRY}/${PROJ_NAME}:${GITHUB_SHA} ./service
 
 docker-build-tracer:  ##-local- Build image
 	cp -R services/training services/backend/app

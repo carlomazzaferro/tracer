@@ -12,3 +12,12 @@ Fill in the `.secrets.env` with your RPC URL, and then:
 ```
 
 Head to http://localhost:8080/docs to check out the live Swagger docs
+
+### Logs from services
+
+```shell
+# Celery
+>>> docker logs -f $(docker ps -qf "name=tracer_celeryworker" ) | tee >(grep -v "^{") | grep "^{" | jq .
+# Service
+>>> docker logs -f $(docker ps -qf "name=tracer_tracer" ) | tee >(grep -v "^{") | grep "^{" | jq .
+```
