@@ -113,7 +113,7 @@ infra: check-ENV
 
 deploy: check-ENV
 	export TF_VAR_server_image_url=${DOCKER_REGISTRY}/${PROJECT_NAME}:${GITHUB_SHA} && \
-	export TF_VAR_celery_image_url=${DOCKER_REGISTRY}/${PROJECT_NAME}:${GITHUB_SHA} && \
+	export TF_VAR_celery_image_url=${DOCKER_REGISTRY}/${PROJECT_NAME}-celery:${GITHUB_SHA} && \
 	export TF_VAR_postgres_password=${POSTGRES_PASSWORD} && \
 	export TF_VAR_rpc_url=${RPC_URL} && \
 	cd config/${ENV} && \

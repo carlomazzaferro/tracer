@@ -23,8 +23,8 @@ jobs:
       - name: Terraform apply
         run: ENV=infra make infra
 
-  build-tracer:
-    name: Build - tracer
+  build-tracer-service:
+    name: Build - Tracer Service
     runs-on: ubuntu-18.04
     needs:
       - infra-setup
@@ -46,7 +46,7 @@ jobs:
         run: make docker-push-service
 
   build-tracer-celery:
-    name: Build - tracer
+    name: Build - Tracer Celery
     runs-on: ubuntu-18.04
     needs:
       - infra-setup
@@ -71,7 +71,7 @@ jobs:
     name: Unit Tests - tracer
     runs-on: ubuntu-18.04
     needs:
-      - build-tracer
+      - build-tracer-service
       - build-tracer-celery
     steps:
       - name: Checkout
