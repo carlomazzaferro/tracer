@@ -55,7 +55,7 @@ module "celery_worker" {
   private_subnets    = module.network.private_subnets
   public_subnets     = module.network.public_subnets
   docker_image       = var.celery_image_url
-  container_family   = "server"
+  container_family   = "celery"
   health_check_path  = "/healthz"
   container_port     = 8080
   loadbalancer_port  = 8080
