@@ -1,4 +1,4 @@
-.PHONY: help install clean local-service docker-build docker-push test-service
+.PHONY: help install clean local-service docker-build-celery docker-build-service docker-push-service docker-push-celery test-service
 
 .DEFAULT_GOAL := help
 SHELL := /bin/bash
@@ -68,14 +68,23 @@ down:  ##-local- Build image
 	docker-compose -f docker-compose.local.build.yml down
 
 
-docker-build:  ##-local- Build image
+docker-build-service:  ##-local- Build image
 	docker build -t ${DOCKER_REGISTRY}/${PROJECT_NAME}:${GITHUB_SHA} ./service
 
 
-docker-push:  ##-local- Build & push image to ECR
-docker-push: docker-build
+docker-build-celery:  ##-local- Build image
+	docker build -f Dockerfile.celery -t ${DOCKER_REGISTRY}/${PROJECT_NAME}-celery:${GITHUB_SHA} ./service
+
+
+docker-push-service:  ##-local- Build & push image to ECR
+docker-push-service: docker-build-service
 	aws ecr get-login-password | docker login --username AWS --password-stdin ${DOCKER_REGISTRY}
 	docker push ${DOCKER_REGISTRY}/${PROJECT_NAME}:${GITHUB_SHA}
+
+docker-push-celery:  ##-local- Build & push image to ECR
+docker-push-celery: docker-build-celery
+	aws ecr get-login-password | docker login --username AWS --password-stdin ${DOCKER_REGISTRY}
+	docker push ${DOCKER_REGISTRY}/${PROJECT_NAME}-celery:${GITHUB_SHA}
 
 # -------------------------------------------------------------------
 # TEST
@@ -95,6 +104,7 @@ test-service:
 
 infra: check-ENV
 	export TF_VAR_service_repo_name=${PROJECT_NAME} && \
+	export TF_VAR_celery_repo_name=${PROJECT_NAME} && \
 	export TF_VAR_aws_region=${AWS_DEFAULT_REGION} && \
 	cd config/infra-setup && \
 	terraform init && \
@@ -103,6 +113,7 @@ infra: check-ENV
 
 deploy: check-ENV
 	export TF_VAR_server_image_url=${DOCKER_REGISTRY}/${PROJECT_NAME}:${GITHUB_SHA} && \
+	export TF_VAR_celery_image_url=${DOCKER_REGISTRY}/${PROJECT_NAME}:${GITHUB_SHA} && \
 	export TF_VAR_postgres_password=${POSTGRES_PASSWORD} && \
 	export TF_VAR_rpc_url=${RPC_URL} && \
 	cd config/${ENV} && \

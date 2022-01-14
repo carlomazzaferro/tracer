@@ -40,10 +40,32 @@ jobs:
           aws-region: eu-central-1
 
       - name: Build
-        run: make docker-build
+        run: make docker-build-service
 
       - name: Push
-        run: make docker-push
+        run: make docker-push-service
+
+  build-tracer-celery:
+    name: Build - tracer
+    runs-on: ubuntu-18.04
+    needs:
+      - infra-setup
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-central-1
+
+      - name: Build
+        run: make docker-build-celery
+
+      - name: Push
+        run: make docker-push-celery
 
   unit-tests-tracer:
     name: Unit Tests - tracer
@@ -71,6 +93,7 @@ jobs:
     needs:
       - unit-tests-tracer
       - build-tracer
+      - build-tracer-celery
     steps:
       - name: Checkout
         uses: actions/checkout@master

@@ -30,6 +30,9 @@ variable "server_image_url" {
   description = "backend server ecr image url"
 }
 
+variable "celery_image_url" {
+  description = "celery ecr image url"
+}
 variable "environment" {
   description = "env we're deploying to"
   default     = "dev"

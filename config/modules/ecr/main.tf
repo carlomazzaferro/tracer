@@ -2,6 +2,10 @@ resource "aws_ecr_repository" "service" {
   name = var.repo_names[0]
 }
 
+resource "aws_ecr_repository" "celery" {
+  name = var.repo_names[1]
+}
+
 
 resource "aws_iam_role_policy" "ecr_admin_policy" {
   name = "ecr_admin_policy"

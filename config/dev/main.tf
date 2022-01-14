@@ -44,6 +44,33 @@ module "server" {
   environment        = "dev"
 }
 
+
+module "celery_worker" {
+  source             = "../modules/container"
+  ecs_cluster_sg     = module.network.ecs_task_sg
+  allow_all_sg       = module.network.allow_all_sg
+  execution_role_arn = data.aws_iam_role.ecr_admin_role.arn
+  cluster_id         = module.ecs.ecs_cluster_id
+  vpc_id             = module.network.vpc_id
+  private_subnets    = module.network.private_subnets
+  public_subnets     = module.network.public_subnets
+  docker_image       = var.celery_image_url
+  container_family   = "server"
+  health_check_path  = "/healthz"
+  container_port     = 8080
+  loadbalancer_port  = 8080
+  cpu                = 512
+  memory             = 1024
+  instance_count     = 1
+  timeout            = 180
+  db_password        = var.postgres_password
+  db_uri             = module.tracer_db.db_instance_address
+  redis_uri          = module.redis.redis_instance_address
+  rpc_url            = var.rpc_url
+  environment        = "dev"
+}
+
+
 module "network" {
   source      = "../modules/networking"
   cidr_block  = var.cidr_block

@@ -15,6 +15,7 @@ module "ecr" {
   source     = "../modules/ecr"
   repo_names = [
     var.service_repo_name,
+    var.celery_repo_name
   ]
 }
 
