@@ -83,4 +83,7 @@ jobs:
           aws-region: eu-central-1
 
       - name: Terraform Deploy
+        env:
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          RPC_URL: ${{ secrets.RPC_URL }}
         run: ENV=dev make deploy
