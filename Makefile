@@ -7,8 +7,6 @@ PYTHONPATH := ${PWD}:${PYTHONPATH}
 AWS_DEFAULT_REGION = eu-central-1
 
 include .common.env
-include .secrets.env
-
 
 ifdef ENV
 include .${ENV}.env
