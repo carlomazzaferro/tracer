@@ -6,8 +6,6 @@ PATH := ${PWD}/venv/bin:${PATH}
 PYTHONPATH := ${PWD}:${PYTHONPATH}
 AWS_DEFAULT_REGION = eu-central-1
 
-DOCKER_REGISTRY = quantco
-
 include .common.env
 include .secrets.env
 
@@ -72,30 +70,14 @@ down:  ##-local- Build image
 	docker-compose -f docker-compose.local.build.yml down
 
 
-docker-build-tracer:  ##-local- Build image
-	docker build -t ${DOCKER_REGISTRY}/${PROJ_NAME}:${GITHUB_SHA} ./service
-
-docker-build-tracer:  ##-local- Build image
-	cp -R services/training services/backend/app
-	docker build --build-arg ENV=prod -t ${DOCKER_REGISTRY}/${PROJ_NAME}:latest ./service
-	rm -rf services/backend/app/training
-
+docker-build:  ##-local- Build image
+	docker build -t ${DOCKER_REGISTRY}/${PROJECT_NAME}:${GITHUB_SHA} ./service
 
 
 docker-push:  ##-local- Build & push image to ECR
 docker-push: docker-build
-	aws ecr get-login --region ${AWS_DEFAULT_REGION} --no-include-email | sh
-	docker push ${DOCKER_REGISTRY}/${PROJ_NAME}
-
-
-local-service:  ##-local- run everything locally
-local-up: export ARGS=$(shell if [ "${logs}" != "true" ]; then echo "-d"; fi)
-local-up: docker-build
-	docker-compose -f docker-compose.yml up
-
-local-down:
-	docker-compose -f docker-compose.local.yml down
-
+	aws ecr get-login-password | docker login --username AWS --password-stdin ${DOCKER_REGISTRY}
+	docker push ${DOCKER_REGISTRY}/${PROJECT_NAME}:${GITHUB_SHA}
 
 # -------------------------------------------------------------------
 # TEST
@@ -104,8 +86,8 @@ local-down:
 
 test-service:
 	cp -R services/training services/backend/app
-	docker build -f ./services/backend/Dockerfile.test --build-arg ENV=test -t ${PROJ_NAME}-base-test:latest ./service
-	docker run -it ${PROJ_NAME}-base-test:latest
+	docker build -f ./services/backend/Dockerfile.test --build-arg ENV=test -t ${PROJECT_NAME}-base-test:latest ./service
+	docker run -it ${PROJECT_NAME}-base-test:latest
 	rm -rf services/backend/app/training
 
 
@@ -113,9 +95,15 @@ test-service:
 # DEPLOY
 # -------------------------------------------------------------------
 
+infra: check-ENV
+	export TF_VAR_service_repo_name=${PROJECT_NAME} && \
+	cd config/infra-setup && \
+	terraform init && \
+	terraform apply -auto-approve
+
 
 deploy: check-ENV
-	export TF_VAR_server_image_url=${DOCKER_REGISTRY}/${PROJ_NAME}:latest && \
+	export TF_VAR_server_image_url=${DOCKER_REGISTRY}/${PROJECT_NAME}:latest && \
 	cd config && \
 	terraform init && \
 	terraform apply -auto-approve
@@ -128,7 +116,7 @@ deploy: check-ENV
 
 
 destroy: check-ENV
-	export TF_VAR_server_image_url=${DOCKER_REGISTRY}/${PROJ_NAME}:latest && \
+	export TF_VAR_server_image_url=${DOCKER_REGISTRY}/${PROJECT_NAME}:latest && \
 	cd config && \
 	terraform init && \
 	terraform destroy

@@ -6,8 +6,8 @@ on:
       - main
 
 jobs:
-  build-tracer:
-    name: Build - tracer
+  infra-setup:
+    name: Setup Infra
     runs-on: ubuntu-18.04
     steps:
       - name: Checkout
@@ -16,9 +16,27 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-access-key-id: ${{ secrets.CI_AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.CI_AWS_SECRET_ACCESS_KEY }}
-          role-to-assume: ${{ secrets.DEPLOYER_AWS_ROLE_ARN }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-central-1
+
+      - name: Terraform Validate
+        run: ENV=infra make infra
+
+  build-tracer:
+    name: Build - tracer
+    runs-on: ubuntu-18.04
+    needs:
+      - infra-setup
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-central-1
 
       - name: Build
@@ -26,29 +44,6 @@ jobs:
 
       - name: Push
         run: make docker-push
-
-
-  build-celery-worker:
-    name: Build - deployment-api
-    runs-on: ubuntu-18.04
-    steps:
-      - name: Checkout
-        uses: actions/checkout@master
-
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.CI_AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.CI_AWS_SECRET_ACCESS_KEY }}
-          role-to-assume: ${{ secrets.DEPLOYER_AWS_ROLE_ARN }}
-          aws-region: eu-central-1
-
-      - name: Build
-        run: make docker-build-celery
-
-      - name: Push
-        run: make docker-push-celery
-
 
   unit-tests-tracer:
     name: Unit Tests - tracer
@@ -62,19 +57,12 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-access-key-id: ${{ secrets.CI_AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.CI_AWS_SECRET_ACCESS_KEY }}
-          role-to-assume: ${{ secrets.DEPLOYER_AWS_ROLE_ARN }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-central-1
 
-      - name: Docker Login
-        run: make docker-login
-
-      - name: Lint
-        run: make docker-lint-tracer
-
-      - name: Test
-        run: make docker-unit-tests-tracer
+      - name: Docker Tests
+        run: echo "Not implemented yet"
 
 
   deploy-to-dev-full:
@@ -82,7 +70,7 @@ jobs:
     runs-on: ubuntu-18.04
     needs:
       - unit-tests-tracer
-      - unit-tests-celery
+      - build-tracer
     steps:
       - name: Checkout
         uses: actions/checkout@master
@@ -90,10 +78,9 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-access-key-id: ${{ secrets.CI_AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.CI_AWS_SECRET_ACCESS_KEY }}
-          role-to-assume: ${{ secrets.DEPLOYER_AWS_ROLE_ARN }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-central-1
 
-      - name: Terraform Validate
-        run: echo "only if time permits"  # ENV=dev make deploy
+      - name: Terraform Deploy
+        run: ENV=dev echo "1234"
