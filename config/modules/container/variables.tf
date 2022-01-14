@@ -45,9 +45,14 @@ variable "timeout" {
   default = 60
 }
 
+variable "ecs_cluster_sg" {}
 
-variable "ecs_cluster_sg" {
-}
+variable "allow_all_sg" {}
 
-variable "allow_all_sg" {
-}
+variable "db_uri" {}
+
+variable "redis_uri" {}
+
+variable "db_password" {}
+
+variable "rpc_url" {}

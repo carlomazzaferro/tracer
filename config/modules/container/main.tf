@@ -10,11 +10,24 @@ resource "aws_ecs_task_definition" "service" {
   memory                   = var.memory
   execution_role_arn       = var.execution_role_arn
 
+  POSTGRES_USER     = tracer
+  POSTGRES_DB       = app
+  POSTGRES_PASSWORD = password
+
   container_definitions = <<DEFINITION
 [
  {
    "cpu": ${var.cpu},
    "memory": ${var.memory},
+   "environment": [{
+      "PROJECT_NAME": "tracer",
+      "POSTGRES_SERVER": "${var.db_uri}",
+      "POSTGRES_USER": "tracer",
+      "POSTGRES_DB": "app",
+      "REDIS_URI": ${var.redis_uri}
+      "POSTGRES_PASSWORD": "${var.db_password}",
+      "RPC_URL": "${var.rpc_url}
+   }],
    "name": "${var.container_family}",
    "image": "${var.docker_image}",
    "networkMode": "awsvpc",

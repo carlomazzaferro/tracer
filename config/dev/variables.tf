@@ -29,3 +29,16 @@ variable "az_count" {
 variable "server_image_url" {
   description = "backend server ecr image url"
 }
+
+variable "environment" {
+  description = "env we're deploying to"
+  default     = "dev"
+}
+
+variable "postgres_password" {
+  description = "postgres db pw"
+}
+
+variable "rpc_url" {
+  description = "URL of the Ethereum RPC service"
+}

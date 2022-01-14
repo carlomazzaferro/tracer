@@ -37,11 +37,16 @@ module "server" {
   memory             = 1024
   instance_count     = 1
   timeout            = 180
+  db_password        = var.postgres_password
+  db_uri             = module.tracer_db.db_instance_address
+  redis_uri          = module.redis.redis_instance_address
+  rpc_url            = var.rpc_url
 }
 
 module "network" {
-  source     = "../modules/networking"
-  cidr_block = var.cidr_block
+  source      = "../modules/networking"
+  cidr_block  = var.cidr_block
+  environment = "dev"
 }
 
 module "ecs" {
@@ -60,6 +65,26 @@ module "ecr" {
 module "redis" {
   source            = "../modules/redis"
   sg_id             = module.network.ecs_task_sg
-  subnet_group_name = module.network.private_subnets
+  subnet_group_name = module.network.redis_subnet_group
   vpc_id            = module.network.vpc_id
+}
+
+module "tracer_db" {
+  source                = "../modules/rds"
+  identifier            = "rds-postgres-tracer-${var.environment}"
+  instance_class        = "db.t2.micro"
+  allocated_storage     = 5
+  max_allocated_storage = 10
+
+  name     = "app"
+  username = "tracer"
+  password = var.postgres_password
+  port     = "5432"
+
+  maintenance_window = "Mon:00:00-Mon:03:00"
+
+  parameter_group_name = "default.postgres11"
+  db_subnet_group_name = module.network.rds_subnet_group
+  vpc_id               = module.network.vpc_id
+  ecs_task_sg_id       = module.network.ecs_task_sg
 }
