@@ -1,8 +1,3 @@
-variable "identifier" {
-  description = "The name of the RDS instance, if omitted, Terraform will assign a random, unique identifier"
-  type        = string
-}
-
 variable "allocated_storage" {
   description = "The allocated storage in gigabytes"
   type        = string
@@ -16,12 +11,12 @@ variable "instance_class" {
 variable "name" {
   description = "The DB name to create. If omitted, no database is created initially"
   type        = string
-  default     = ""
 }
 
 variable "username" {
   description = "Username for the master DB user"
   type        = string
+  default     = "tracer"
 }
 
 variable "password" {
@@ -60,27 +55,7 @@ variable "maintenance_window" {
   type        = string
 }
 
-variable "domain" {
-  type        = string
-  description = "Domain model target"
-}
-
-variable "domain_suffix" {
-  type        = string
-  description = "complement of domain to find public urls"
-}
-
-variable "hosted_zone_id" {
-  type        = string
-  description = "ARN of route53 zone"
-}
-
-variable "cluster_name" {
-  type        = string
-  description = "eks cluster name"
-}
-
-variable "node_sg_id" {
+variable "ecs_task_sg_id" {
   type        = string
   description = "security group id of worker node sg"
 }

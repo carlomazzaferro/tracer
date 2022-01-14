@@ -6,6 +6,14 @@ output "private_subnets" {
   value = aws_subnet.private.*.id
 }
 
+output "rds_subnet_group" {
+  value = aws_db_subnet_group.default.name
+}
+
+output "redis_subnet_group" {
+  value = aws_elasticache_subnet_group.default.name
+}
+
 output "vpc_id" {
   value = aws_vpc.main.id
 }

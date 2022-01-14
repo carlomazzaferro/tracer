@@ -1,8 +1,3 @@
-output "db_instance_fixed_address" {
-  description = "the canonical name for the db instance"
-  value = "${var.identifier}.${var.domain_suffix}"
-}
-
 output "db_instance_address" {
   description = "The address of the RDS instance"
   value       = aws_db_instance.db.address

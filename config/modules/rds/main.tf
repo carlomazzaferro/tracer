@@ -3,7 +3,7 @@
 #####
 resource "aws_db_instance" "db" {
 
-  identifier = var.identifier
+  identifier = "tracer-postgres-db"
 
   engine            = "postgres"
   engine_version    = "11"

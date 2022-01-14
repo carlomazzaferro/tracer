@@ -3,3 +3,7 @@ variable "az_count" {
 }
 
 variable "cidr_block" {}
+
+variable "environment" {
+  type = string
+}
