@@ -104,7 +104,7 @@ test-service:
 
 infra: check-ENV
 	export TF_VAR_service_repo_name=${PROJECT_NAME} && \
-	export TF_VAR_celery_repo_name=${PROJECT_NAME} && \
+	export TF_VAR_celery_repo_name=${PROJECT_NAME}-celery && \
 	export TF_VAR_aws_region=${AWS_DEFAULT_REGION} && \
 	cd config/infra-setup && \
 	terraform init && \
