@@ -95,14 +95,15 @@ test-service:
 
 infra: check-ENV
 	export TF_VAR_service_repo_name=${PROJECT_NAME} && \
+	export TF_VAR_aws_region=${AWS_DEFAULT_REGION} && \
 	cd config/infra-setup && \
 	terraform init && \
 	terraform apply -auto-approve
 
 
 deploy: check-ENV
-	export TF_VAR_server_image_url=${DOCKER_REGISTRY}/${PROJECT_NAME}:latest && \
-	cd config && \
+	export TF_VAR_server_image_url=${DOCKER_REGISTRY}/${PROJECT_NAME}:${GITHUB_SHA} && \
+	cd config/${ENV} && \
 	terraform init && \
 	terraform apply -auto-approve
 

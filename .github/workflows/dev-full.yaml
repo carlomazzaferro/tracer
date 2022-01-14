@@ -83,4 +83,4 @@ jobs:
           aws-region: eu-central-1
 
       - name: Terraform Deploy
-        run: ENV=dev echo "1234"
+        run: ENV=dev make deploy
