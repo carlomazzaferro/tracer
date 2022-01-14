@@ -5,9 +5,6 @@ services:
     build:
       context: ./service
     environment:
-      - SERVER_HOST=http://${BACKEND_DOMAIN_NAME}
-      - SERVER_NAME=${BACKEND_DOMAIN_NAME}
-      - VIRTUAL_HOST=${BACKEND_DOMAIN_NAME}
       - BACKEND_CORS_ORIGINS=["http://localhost", "http://localhost:4200", "https://localhost", "https://localhost:4200",  "https://localhost:8080", "http://api.dev.tracer.io"]
       - PROJECT_NAME=tracer
       - POSTGRES_SERVER=db
