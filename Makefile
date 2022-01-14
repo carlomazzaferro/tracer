@@ -73,7 +73,7 @@ docker-build-service:  ##-local- Build image
 
 
 docker-build-celery:  ##-local- Build image
-	docker build -f Dockerfile.celery -t ${DOCKER_REGISTRY}/${PROJECT_NAME}-celery:${GITHUB_SHA} ./service
+	docker build -f ./service/Dockerfile.celery -t ${DOCKER_REGISTRY}/${PROJECT_NAME}-celery:${GITHUB_SHA} ./service
 
 
 docker-push-service:  ##-local- Build & push image to ECR
@@ -93,7 +93,7 @@ docker-push-celery: docker-build-celery
 
 test-service:
 	cp -R services/training services/backend/app
-	docker build -f ./services/backend/Dockerfile.test --build-arg ENV=test -t ${PROJECT_NAME}-base-test:latest ./service
+	docker build -f ./service/Dockerfile.test --build-arg ENV=test -t ${PROJECT_NAME}-base-test:latest ./service
 	docker run -it ${PROJECT_NAME}-base-test:latest
 	rm -rf services/backend/app/training
 
