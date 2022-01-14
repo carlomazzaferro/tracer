@@ -3,7 +3,7 @@ variable "region" {
 }
 
 variable "ami" {
-  type        = "map"
+  type        = map(string)
   description = "AWS ECS AMI id"
 
   default = {

@@ -9,25 +9,22 @@ resource "aws_ecs_task_definition" "service" {
   cpu                      = var.cpu
   memory                   = var.memory
   execution_role_arn       = var.execution_role_arn
-
-  POSTGRES_USER     = tracer
-  POSTGRES_DB       = app
-  POSTGRES_PASSWORD = password
-
-  container_definitions = <<DEFINITION
+  container_definitions    = <<TASK_DEFINITION
 [
  {
    "cpu": ${var.cpu},
    "memory": ${var.memory},
-   "environment": [{
-      "PROJECT_NAME": "tracer",
-      "POSTGRES_SERVER": "${var.db_uri}",
-      "POSTGRES_USER": "tracer",
-      "POSTGRES_DB": "app",
-      "REDIS_URI": ${var.redis_uri}
-      "POSTGRES_PASSWORD": "${var.db_password}",
-      "RPC_URL": "${var.rpc_url}
-   }],
+   "environment": [
+      {"name": "PROJECT_NAME", "value": "tracer"},
+      {"name": "POSTGRES_SERVER", "value": "${var.db_uri}"},
+      {"name": "POSTGRES_USER", "value": "tracer"},
+      {"name": "POSTGRES_DB", "value": "app"},
+      {"name": "REDIS_URI", "value": "redis://${var.redis_uri}:6379/0"},
+      {"name": "POSTGRES_PASSWORD", "value": "${var.db_password}"},
+      {"name": "RPC_URL", "value": "${var.rpc_url}"},
+      {"name": "ENV", "value": "${var.environment}"}
+
+   ],
    "name": "${var.container_family}",
    "image": "${var.docker_image}",
    "networkMode": "awsvpc",
@@ -47,7 +44,7 @@ resource "aws_ecs_task_definition" "service" {
             }
  }
 ]
-DEFINITION
+TASK_DEFINITION
 }
 
 resource "aws_ecs_service" "service" {
@@ -59,6 +56,7 @@ resource "aws_ecs_service" "service" {
   depends_on  = [aws_alb_target_group.front_end, aws_alb.lb]
 
   # Track the latest ACTIVE revision
+
   task_definition = "${aws_ecs_task_definition.service.family}:${max("${aws_ecs_task_definition.service.revision}", "${aws_ecs_task_definition.service.revision}")}"
 
   network_configuration {

@@ -3,11 +3,11 @@ variable "ecs_cluster_name" {
 }
 
 variable "private_subnets" {
-  type = "list"
+  type = list(string)
 }
 
 variable "public_subnets" {
-  type = "list"
+  type = list(string)
 }
 
 variable "vpc_id" {}

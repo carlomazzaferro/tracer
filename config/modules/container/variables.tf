@@ -3,11 +3,11 @@ variable "cluster_id" {}
 variable "vpc_id" {}
 
 variable "private_subnets" {
-  type = "list"
+  type = list(string)
 }
 
 variable "public_subnets" {
-  type = "list"
+  type = list(string)
 }
 
 variable "docker_image" {}
@@ -18,11 +18,11 @@ variable "instance_count" {
 }
 
 variable "container_port" {
-  default = 80
+  default = 8080
 }
 
 variable "loadbalancer_port" {
-  default = 80
+  default = 8080
 }
 
 variable "cpu" {
@@ -56,3 +56,5 @@ variable "redis_uri" {}
 variable "db_password" {}
 
 variable "rpc_url" {}
+
+variable "environment" {}

@@ -32,7 +32,7 @@ module "server" {
   container_family   = "server"
   health_check_path  = "/healthz"
   container_port     = 8080
-  loadbalancer_port  = 80
+  loadbalancer_port  = 8080
   cpu                = 512
   memory             = 1024
   instance_count     = 1
@@ -41,6 +41,7 @@ module "server" {
   db_uri             = module.tracer_db.db_instance_address
   redis_uri          = module.redis.redis_instance_address
   rpc_url            = var.rpc_url
+  environment        = "dev"
 }
 
 module "network" {
@@ -57,11 +58,6 @@ module "ecs" {
   public_subnets   = module.network.public_subnets
 }
 
-module "ecr" {
-  source     = "../modules/ecr"
-  repo_names = []
-}
-
 module "redis" {
   source            = "../modules/redis"
   sg_id             = module.network.ecs_task_sg
@@ -71,7 +67,6 @@ module "redis" {
 
 module "tracer_db" {
   source                = "../modules/rds"
-  identifier            = "rds-postgres-tracer-${var.environment}"
   instance_class        = "db.t2.micro"
   allocated_storage     = 5
   max_allocated_storage = 10
